@@ -1,6 +1,12 @@
 const fs = require('fs');
+const http = require('http');
+const url = require('url');
 
-// Blocking, synch way
+/////////////////////////////////
+///////////FILES/////////////////
+/////////////////////////////////
+
+// Blocking, sync way
 const textIn = fs.readFileSync('./txt/input.txt', 'utf-8');
 console.log(textIn);
 
@@ -8,7 +14,7 @@ const textOut = `This what we know about avocado: ${textIn}.\nCreated on ${Date.
 fs.writeFileSync('./txt/output.txt', textOut);
 console.log('Process Complete!');
 
-// Unblocking, asynch way
+// Unblocking, async way
 fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
 
     if (err) return console.log('Error occurred!');
@@ -26,3 +32,28 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
     });
 });
 console.log(`Starting to read file!`);
+
+/////////////////////////////////
+///////////SERVER////////////////
+/////////////////////////////////
+
+const server = http.createServer((req, res) => {
+    const pathName = req.url;
+
+    if (pathName === '/' || pathName === '/overview') {
+        res.end(`This is the overview!`)
+    } else if (pathName === '/product') {
+        res.end('This is the product!');
+    } else {
+        res.writeHead(404, {
+            'Content-type': 'text/html',
+            'my-own-header': 'hello-world'
+        });
+        res.end('<h1>Page not found!</h1>');
+    }
+});
+
+// listening to request
+server.listen(8080, '127.0.0.1', () => {
+    console.log('Listening to request on port 8080');
+});
